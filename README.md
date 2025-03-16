@@ -1,4 +1,4 @@
-# EDA-with-SQL
+# EDA-with-SQL (car Sales)
 In this Project we explored Car Sales Data with SQL
 skill used: window functions, CTE, Aggregate Functions, creating Tables etc.
 */
