@@ -1,5 +1,8 @@
 # EDA-with-SQL
 In this Project we explored Car Sales Data with SQL
+skill used: window functions, CTE, Aggregate Functions, creating Tables etc.
+*/
+
 select*
 from car_sales1;
 
@@ -188,7 +191,7 @@ select*
 from Top_Rank_Color_sold
 where ranking <= 5;
 
-
+/*
 
 
 
