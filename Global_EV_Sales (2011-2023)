@@ -1,0 +1,73 @@
+select*
+from electric_car_sales;
+
+
+select `year`,
+str_to_date(`year`,'%d/%m/%Y')
+from electric_car_sales;
+
+update electric_car_sales
+set `year` = str_to_date(`year`,'%d/%m/%Y');
+
+alter table electric_car_sales
+modify column `year` YEAR;
+
+
+----- SALES TRENDS---
+select year, ceil(SUM(value)) AS total_sales
+From electric_car_sales
+where parameter = 'EV sales' and unit = 'Vehicles' and mode = 'Cars' and category = 'Historical'
+group by year
+order by year;
+
+--- YEAR-OVER-YEAR GROWTH ----
+WITH yearly_sales AS (
+select year, ceil(SUM(value)) AS total_sales
+from electric_car_sales
+where parameter = 'EV sales' and unit = 'Vehicles' and mode = 'Cars' and category = 'Historical'
+group by year
+)
+select year, total_sales, ceil((total_sales -LAG(total_sales) over(Order by year)) * 100.0 / LAG(total_sales) over (Order by year)) AS yoy_growth
+from yearly_sales
+order by year;
+
+---- REGIONAL LEADERS----
+select region, ceil(SUM(value)) AS total_sales
+from electric_car_sales
+where parameter = 'EV sales' and unit = 'Vehicles' and mode = 'Cars' and category = 'Historical' and year = '2023'
+group by region
+order by total_sales DESC
+Limit 10;
+
+----- REGIONAL SALES SHARE---
+select region, SUM(value)* 100.00 / SUM(SUM(value)) OVER() AS sales_share
+from electric_car_sales 
+where parameter = 'EV sales' and unit = 'Vehicles' and mode = 'Cars' and category = 'Historical' 
+group by region
+order by sales_share desc
+limit 5;
+
+---- MARKET SHARE(GLOBAL)---
+select year, AVG(value) AS sales_share
+from electric_car_sales
+where parameter = 'EV sales share' and unit = 'percent' and mode = 'Cars' and category = 'Historical' and region = 'World'
+group by year 
+order by year;
+
+---- MARKET SHARE BY REGION---
+select region, AVG(value) AS sales_share
+from electric_car_sales
+where parameter = 'EV sales share' and unit = 'percent' and mode = 'Cars' and category = 'Historical'
+group by region
+order by sales_share desc
+limit 10 ;
+
+---- TOP SELLING POWERTRAIN ----
+select powertrain, SUM(value) AS total_sales, 
+SUM(value) * 100.00 / SUM(SUM(value)) over () AS sales_share
+From electric_car_sales
+where parameter = 'EV sales' and unit = 'Vehicles' and mode = 'Cars' and category = 'Historical'
+group by powertrain
+order by total_sales desc;
+
+
